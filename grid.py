@@ -1,7 +1,6 @@
 class Grid:
     def __init__(self, file):
         self.grid = dict()
-        self.neighbours = dict()
         self.parseInputFile(file)
         
     def parseInputFile(self,file):
@@ -21,5 +20,7 @@ class Grid:
 
             i = i + 1
                 
-        
-grid = Grid("first.sudoku")
+    def test(self):
+        for loc in self.grid:
+            print loc,"->",self.grid[loc]
+        return

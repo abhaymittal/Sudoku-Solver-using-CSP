@@ -1,16 +1,18 @@
-class Sudoku:
+from grid import *
+from Solver import *
+class Sudoku_Problem:
     def __init__(self):
         self.neighbours = dict()
-        self.addNeighbours()
+        self.add_neighbours()
         self.constraints=[]
-        self.generateConstraints()
+        self.generate_constraints()
 
-    def addNeighbours(self):
+    def add_neighbours(self):
         for i in range(9):
             for j in range(9):
-                self.neighbours[str(i) + str(j)] = self.getNeighbours(i,j)
+                self.neighbours[str(i) + str(j)] = self.get_neighbours(i,j)
         
-    def getNeighbours(self, g_x, g_y):
+    def get_neighbours(self, g_x, g_y):
         ## elements in the same row
         g_x_neighbours = [str(x) + str(g_y) for x in range(0,9) if x != g_y]
         ## elements in the same column
@@ -27,14 +29,14 @@ class Sudoku:
         
         return g_x_neighbours + g_y_neighbours + box_n
 
-    def generateConstraints(self):
+    def generate_constraints(self):
         '''
         Function to generate all the constraints
         '''
         for x in range(9):
-            self.constraints.append([str(x) + str(g_y) for x in range(0,9)])
+            self.constraints.append([str(x) + str(y) for y in range(0,9)])
         for y in range(9):
-            self.constraints.append([str(g_x) + str(y) for y in range(0,9)])
+            self.constraints.append([str(x) + str(y) for x in range(0,9)])
         for x in (0,3,6):
             for y in range(0,3,6):
                 box_n = []
@@ -43,6 +45,7 @@ class Sudoku:
                 for i in range(3):
                     for j in range(3):
                         box_n.append(str(x_base + i) + str(y_base + j))
+                self.constraints.append(box_n)
         return
         
 
@@ -54,7 +57,7 @@ class Sudoku:
         @var: The variable whose consistency needs to be checked
         @assignment: The current assignment
         '''
-        for x in self.neighbors[var]:
+        for x in self.neighbours[var]:
             if assignment[x] == assignment[var]:
                 return False
         return True
@@ -63,9 +66,28 @@ class Sudoku:
         for constraint in self.constraints:
             used_vals=dict()
             for var in constraint:
-                if assignment[var]='-' || len(assignment[var]>1):
+                if assignment[var]=='-' or len(assignment[var])>1:
                     return False
-                if  used_vals[assignment[var]] is True:
+                if  assignment[var][0] in used_vals and used_vals[assignment[var][0]] is True:
                     return False
-                used_vals[assignment[var]]=False
+                used_vals[assignment[var][0]]=True
                 
+        return True
+
+
+#########################################################################################
+####################################### MAIN ############################################
+#########################################################################################
+
+def main():
+    sudoku=Sudoku_Problem()
+    grid=Grid('first.sudoku')
+    solver=Solver()
+    assignment=solver.backtracking_search(grid.grid,sudoku)
+    print assignment
+    for key in assignment:
+        print key ,"=>",assignment[key]
+    return
+
+if __name__== "__main__":
+    main()

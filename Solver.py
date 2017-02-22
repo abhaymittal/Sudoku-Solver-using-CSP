@@ -1,5 +1,8 @@
 class Solver:
 
+    def __init__(self):
+        return
+    
     def backtracking_search(self,assignment,csp):
         '''
         Implementation for backtracking search
@@ -8,7 +11,7 @@ class Solver:
         @assignment: assignment
         @csp: the constraint satisfaction problem
         '''
-        if csp.check_valid(assignment):
+        if csp.is_valid(assignment):
             return assignment
 
         var=self.select_unassigned_variable(assignment,csp)
@@ -16,7 +19,7 @@ class Solver:
         for value in self.order_domain_values(var,assignment,csp):
             var_domain=assignment[var]
             assignment[var]=value
-            if csp.consistent(var,assignment):
+            if csp.is_consistent(var,assignment):
                 result=self.backtracking_search(assignment,csp)
                 if result is not False:
                     return result
@@ -34,7 +37,7 @@ class Solver:
         '''
 
         for var in assignment:
-            if len(assignment[var]>1):
+            if len(assignment[var])>1:
                 return var
         return None
     
