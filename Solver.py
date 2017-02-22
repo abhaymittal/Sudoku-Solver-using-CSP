@@ -18,7 +18,7 @@ class Solver:
 
         for value in self.order_domain_values(var,assignment,csp):
             var_domain=assignment[var]
-            assignment[var]=value
+            assignment[var]=[value]
             if csp.is_consistent(var,assignment):
                 result=self.backtracking_search(assignment,csp)
                 if result is not False:

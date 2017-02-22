@@ -14,9 +14,9 @@ class Sudoku_Problem:
         
     def get_neighbours(self, g_x, g_y):
         ## elements in the same row
-        g_x_neighbours = [str(x) + str(g_y) for x in range(0,9) if x != g_y]
+        g_x_neighbours = [str(g_x) + str(x) for x in range(0,9) if x != g_y]
         ## elements in the same column
-        g_y_neighbours = [str(g_x) + str(x) for x in range(0,9) if x != g_x]
+        g_y_neighbours = [str(x) + str(g_y) for x in range(0,9) if x != g_x]
         ## elements in the same box
         box_n = []
         x_base = int(g_x/3) * 3
@@ -24,10 +24,11 @@ class Sudoku_Problem:
         for i in range(3):
             for j in range(3):
                 box_n.append(str(x_base + i) + str(y_base + j))
-
         box_n.remove(str(g_x) + str(g_y))
-        
-        return g_x_neighbours + g_y_neighbours + box_n
+        neighbours = list(set(g_x_neighbours + g_y_neighbours + box_n))
+        neighbours.sort()
+        # print "Neighbors "+str(g_x) + str(g_y)+ " => ",neighbours
+        return neighbours
 
     def generate_constraints(self):
         '''
@@ -81,13 +82,10 @@ class Sudoku_Problem:
 
 def main():
     sudoku=Sudoku_Problem()
-    grid=Grid('first.sudoku')
+    grid=Grid('second.sudoku')
     solver=Solver()
     assignment=solver.backtracking_search(grid.grid,sudoku)
-    print assignment
-    for key in assignment:
-        print key ,"=>",assignment[key]
-    return
+    print sorted(assignment.items())
 
 if __name__== "__main__":
     main()
