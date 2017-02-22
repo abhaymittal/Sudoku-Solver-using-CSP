@@ -3,7 +3,7 @@ class Sudoku:
         self.neighbours = dict()
         self.addNeighbours()
         self.constraints=[]
-        self.getConstraints()
+        self.generateConstraints()
 
     def addNeighbours(self):
         for i in range(9):
@@ -27,7 +27,10 @@ class Sudoku:
         
         return g_x_neighbours + g_y_neighbours + box_n
 
-    def getConstraints(self):
+    def generateConstraints(self):
+        '''
+        Function to generate all the constraints
+        '''
         for x in range(9):
             self.constraints.append([str(x) + str(g_y) for x in range(0,9)])
         for y in range(9):
@@ -40,9 +43,10 @@ class Sudoku:
                 for i in range(3):
                     for j in range(3):
                         box_n.append(str(x_base + i) + str(y_base + j))
+        return
         
 
-    def consistent(self,var,assignment):
+    def is_consistent(self,var,assignment):
         '''
         Function to check if the current assignment to variable var is consistent
         ---
@@ -55,7 +59,7 @@ class Sudoku:
                 return False
         return True
     
-    def check_valid(self,assignment):
+    def is_valid(self,assignment):
         for constraint in self.constraints:
             used_vals=dict()
             for var in constraint:
