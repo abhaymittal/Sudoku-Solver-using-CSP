@@ -24,3 +24,18 @@ class sudoku:
         
         return g_x_neighbours + g_y_neighbours + box_n
 
+    def consistent(self,var,assignment):
+        '''
+        Function to check if the current assignment to variable var is consistent
+        ---
+        Args:
+        @var: The variable whose consistency needs to be checked
+        @assignment: The current assignment
+        '''
+        for x in self.neighbors[var]:
+            if assignment[x] == assignment[var]:
+                return False
+        return True
+    
+    def check_valid(self,assignment):
+        for constraint in self.constraints:
