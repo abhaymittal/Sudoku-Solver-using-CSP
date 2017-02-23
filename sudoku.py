@@ -82,9 +82,10 @@ class Sudoku_Problem:
 
 def main():
     sudoku=Sudoku_Problem()
-    grid=Grid('second.sudoku')
+    grid=Grid('in/26.sudoku')
     solver=Solver()
-    assignment=solver.backtracking_search(grid.grid,sudoku)
+    assignment,ng=solver.backtracking_search(grid.grid,sudoku)
+    print "Guesses = ",ng
     print sorted(assignment.items())
 
 if __name__== "__main__":

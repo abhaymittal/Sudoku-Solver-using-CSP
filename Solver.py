@@ -12,19 +12,20 @@ class Solver:
         @csp: the constraint satisfaction problem
         '''
         if csp.is_valid(assignment):
-            return assignment
+            return assignment,0
 
         var=self.select_unassigned_variable(assignment,csp)
-
+        n_guesses=len(assignment[var])-1
         for value in self.order_domain_values(var,assignment,csp):
             var_domain=assignment[var]
             assignment[var]=[value]
             if csp.is_consistent(var,assignment):
-                result=self.backtracking_search(assignment,csp)
+                result,ng=self.backtracking_search(assignment,csp)
                 if result is not False:
-                    return result
+                    n_guesses=n_guesses+ng
+                    return result,n_guesses
             assignment[var]=var_domain
-        return False
+        return False,0
 
             
     def select_unassigned_variable(self,assignment,csp):
