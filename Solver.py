@@ -1,3 +1,6 @@
+from queue import *
+import copy
+
 class Solver:
 
     def __init__(self):
@@ -20,10 +23,13 @@ class Solver:
             var_domain=assignment[var]
             assignment[var]=[value]
             if csp.is_consistent(var,assignment):
+                assign_copy=copy.deepcopy(assignment)
+                # self.ac_three(assignment, csp, var)
                 result,ng=self.backtracking_search(assignment,csp)
                 if result is not False:
                     n_guesses=n_guesses+ng
                     return result,n_guesses
+                assignment = assign_copy
             assignment[var]=var_domain
         return False,0
 
@@ -64,5 +70,25 @@ class Solver:
 
         return assignment[var]
 
-    
+    def ac_three(self, assignment, csp, var):
+        q = Queue()
+        
+        for i in csp.neighbours[var]:
+            q.put((i, var))
+
+        while q.empty() == False:
+            v_pair = q.get()
+            if self.revise(csp, v_pair, assignment) == True:
+                if len(assignment[v_pair[0]]) == 0:
+                    return False                
+        return True
+        
+    def revise(self,csp, v_pair, assignment):
+        revised = False
+        d_j = assignment[v_pair[1]]
+        if len(d_j) == 1 and d_j[0] in assignment[v_pair[0]]:
+            assignment[v_pair[0]].remove(d_j[0])
+            revised = True
+        return revised
                         
+
