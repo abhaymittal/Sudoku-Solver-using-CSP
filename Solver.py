@@ -1,4 +1,5 @@
 from queue import *
+import copy
 
 class Solver:
 
@@ -15,7 +16,6 @@ class Solver:
         '''
         if csp.is_valid(assignment):
             return assignment
-        
 
         var=self.select_unassigned_variable(assignment,csp)
 
@@ -23,10 +23,12 @@ class Solver:
             var_domain=assignment[var]
             assignment[var]=[value]
             if csp.is_consistent(var,assignment):
+                assign_copy=copy.deepcopy(assignment)
                 self.ac_three(assignment, csp, var)
                 result=self.backtracking_search(assignment,csp)
                 if result is not False:
                     return result
+                assignment = assign_copy
             assignment[var]=var_domain
         return False
 
@@ -71,7 +73,7 @@ class Solver:
         q = Queue()
         
         for i in csp.neighbours[var]:
-            q.put((var, i))
+            q.put((i, var))
 
         while q.empty() == False:
             v_pair = q.get()
@@ -88,3 +90,4 @@ class Solver:
             revised = True
         return revised
                         
+
