@@ -1,5 +1,6 @@
 from grid import *
 from Solver import *
+import os
 class Sudoku_Problem:
     def __init__(self):
         self.neighbours = dict()
@@ -75,6 +76,17 @@ class Sudoku_Problem:
                 
         return True
 
+    def print_grid(self,grid):
+        print "-----------------------------------------"
+        for i in range(9):
+            print "|",
+            for j in range(9):
+                key=str(i)+str(j)
+                print str(grid[key][0])+"|",
+            print ""
+            print "-------------------------------------"
+        return
+                
 
 #########################################################################################
 ####################################### MAIN ############################################
@@ -82,11 +94,15 @@ class Sudoku_Problem:
 
 def main():
     sudoku=Sudoku_Problem()
-    grid=Grid('in/26.sudoku')
+    # grid=Grid('in/26.sudoku')
     solver=Solver()
-    assignment,ng=solver.backtracking_search(grid.grid,sudoku)
-    print "Guesses = ",ng
-    print sorted(assignment.items())
+    directory='in'
+    for filename in os.listdir(directory):
+        print " ------------------------------------ "+filename+" -------------------------------------"
+        grid=Grid(os.path.join(directory,filename))
+        assignment,ng=solver.backtracking_search(grid.grid,sudoku)
+        print "Guesses = ",ng
+        print sudoku.print_grid(assignment)
 
 if __name__== "__main__":
     main()
