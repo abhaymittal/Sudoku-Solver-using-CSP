@@ -7,6 +7,7 @@ class Sudoku_Problem:
         self.add_neighbours()
         self.constraints=[]
         self.generate_constraints()
+        self.max_d_size=9
 
     def add_neighbours(self):
         for i in range(9):
@@ -94,15 +95,21 @@ class Sudoku_Problem:
 
 def main():
     sudoku=Sudoku_Problem()
-    # grid=Grid('in/26.sudoku')
     solver=Solver()
     directory='in'
-    for filename in os.listdir(directory):
-        print " ------------------------------------ "+filename+" -------------------------------------"
-        grid=Grid(os.path.join(directory,filename))
-        assignment,ng=solver.backtracking_search(grid.grid,sudoku)
-        print "Guesses = ",ng
-        print sudoku.print_grid(assignment)
+
+    grid=Grid('in/10.sudoku')
+    assignment,ng=solver.backtracking_search(grid.grid,sudoku,True)
+    print "Guesses = ",ng
+    print sudoku.print_grid(assignment)
+    
+
+    # for filename in os.listdir(directory):
+    #     print " ------------------------------------ "+filename+" -------------------------------------"
+    #     grid=Grid(os.path.join(directory,filename))
+    #     assignment,ng=solver.backtracking_search(grid.grid,sudoku,False)
+    #     print "Guesses = ",ng
+    #     print sudoku.print_grid(assignment)
 
 if __name__== "__main__":
     main()
