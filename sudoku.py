@@ -1,3 +1,4 @@
+from __future__ import print_function
 from grid import *
 from Solver import *
 import os
@@ -82,7 +83,7 @@ class Sudoku_Problem:
                 return False
         return True
     
-    def printSudoku(self, assignment):
+    def print_sudoku(self, assignment):
         for i in range(81):
             if i%9 == 0:
                 print("\n")
@@ -96,6 +97,7 @@ class Sudoku_Problem:
                 if assignment[9*i +j] == 0:
                     print(str(j+1) + " ", end="")
                     break
+        print("")
                 
                 
     def is_valid(self,assignment,table):
@@ -138,20 +140,18 @@ def main():
     solver=Solver()
     directory='in'
 
-    grid=Grid('in/100.sudoku')
-    assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table)
-    print("Guesses = ",ng)
-    #print(assignment)
-    #print(sudoku.print_grid(assignment))
-    sudoku.printSudoku(assignment)
-    print("\n")
+    # grid=Grid('in/100.sudoku')
+    # assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table)
+    # print("Guesses = ",ng)
+    # sudoku.print_sudoku(assignment)
+    # print("\n")
 
-    # for filename in os.listdir(directory):
-    #     print " ------------------------------------ "+filename+" -------------------------------------"
-    #     grid=Grid(os.path.join(directory,filename))
-    #     assignment,ng=solver.backtracking_search(grid.grid,sudoku,False)
-    #     print "Guesses = ",ng
-    #     print sudoku.print_grid(assignment)
+    for filename in os.listdir(directory):
+        print(" ------------------------------------ "+filename+" -------------------------------------")
+        grid=Grid(os.path.join(directory,filename))
+        assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table)
+        print("Guesses = ",ng)
+        sudoku.print_sudoku(assignment)
 
 if __name__== "__main__":
     main()
