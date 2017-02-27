@@ -140,8 +140,9 @@ def main():
     solver=Solver()
     directory='in'
 
-#     grid=Grid('in/1.sudoku')
+#     grid=Grid('in/100.sudoku')
 #     solver.ac_three_begin(grid.grid, sudoku, 1, grid.table)
+#     #solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
 #     assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table)
 #     print("Guesses = ",ng)
 #     sudoku.print_sudoku(assignment)
@@ -151,6 +152,7 @@ def main():
         print(" ------------------------------------ "+filename+" -------------------------------------")
         grid=Grid(os.path.join(directory,filename))
         solver.ac_three_begin(grid.grid, sudoku, 1, grid.table)
+        #solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
         assignment,ng=solver.backtracking_search(grid.grid,sudoku,False,grid.table)
         print("Guesses = ",ng)
         sudoku.print_sudoku(assignment)
