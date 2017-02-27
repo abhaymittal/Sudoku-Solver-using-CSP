@@ -38,12 +38,12 @@ class Solver:
             if csp.is_consistent(var,assign_copy,table_copy):
                 if self.inference(assign_copy,csp,var,table_copy):
                     result,ng=self.backtracking_search(assign_copy,csp,use_mrv,table_copy)
+                    n_guesses=n_guesses+ng
                     if result is not False:
-                        n_guesses=n_guesses+ng
                         return result,n_guesses
 
         table[var] = domain_length
-        return False,0
+        return False,n_guesses
 
             
     def select_unassigned_variable(self,assignment,csp,use_mrv,table):
@@ -99,7 +99,7 @@ class Solver:
         @csp: The constraint satisfaction problem
         @var: The variable to which value was assigned
         '''
-        #return True
+        # return True
         res=self.ac_three(assignment,csp,var,table) # do ac3
         #self.onlyPlaceForValue(csp, assignment, table)
         return res
@@ -121,7 +121,7 @@ class Solver:
                         q.add((xk,v_pair[0]))
         return True
     
-    def ac_three_begin(self, assignment, csp, var, table):
+    def ac_three_begin(self, assignment, csp, table):
         q = set()
 
         for c in csp.constraints:
