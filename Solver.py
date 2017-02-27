@@ -98,13 +98,23 @@ class Solver:
         @assignment: The current assignment
         @csp: The constraint satisfaction problem
         @var: The variable to which value was assigned
+        @table: Array containing the domain size of each variable
         '''
-        # return True
+        return True
         res=self.ac_three(assignment,csp,var,table) # do ac3
         #self.onlyPlaceForValue(csp, assignment, table)
         return res
 
     def ac_three(self, assignment, csp, var,table):
+        '''
+        Function implementing AC3 (MAC version) algorithm
+        ---
+        Args:
+        @assignment: The current assignment
+        @csp: The constraint satisfaction problem
+        @var: The variable to which value was assigned
+        @table: Array containing the domain size of each variable
+        '''
         q = set()
         
         for i in csp.neighbours[var]:
@@ -122,6 +132,14 @@ class Solver:
         return True
     
     def ac_three_begin(self, assignment, csp, table):
+        '''
+        Function implementing AC3 (preprocessing) aglgorithm
+        ---
+        Args:
+        @assignment: The current assignment
+        @csp: The constraint satisfaction problem
+        @table: Array containing the domain size of each variable
+        '''
         q = set()
 
         for c in csp.constraints:
@@ -140,6 +158,7 @@ class Solver:
                         ### Only add here if xk has domain of size 1
                         q.add((xk,v_pair[0]))
         return True
+    
 
     def revise(self,csp, v_pair, assignment,table):
         revised = False

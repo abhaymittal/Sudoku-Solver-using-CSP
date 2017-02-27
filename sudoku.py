@@ -5,6 +5,9 @@ import os
 
 class Sudoku_Problem:
     def __init__(self):
+        '''
+        Constructor
+        '''
         self.neighbours = dict()
         self.add_neighbours()
         self.constraints=[]
@@ -12,12 +15,23 @@ class Sudoku_Problem:
         self.max_d_size=9
 
     def add_neighbours(self):
+        '''
+        Function to generate the neighbor table
+        ----
+        '''
         for i in range(9):
             for j in range(9):
                 #self.neighbours[str(i) + str(j)] = self.get_neighbours(i,j)
                 self.neighbours[9*i+j] = self.get_neighbours(i,j) 
         
     def get_neighbours(self, g_x, g_y):
+        '''
+        Function to get the neighbors of a variable
+        ---
+        Args:
+        @g_x: The row number of the variable (0-8)
+        @g_y: The column number of the variable (0-8)
+        '''
         ## elements in the same row
         g_x_neighbours = [9*g_x + x for x in range(0,9) if x != g_y]
         ## elements in the same column
@@ -38,7 +52,9 @@ class Sudoku_Problem:
     def generate_constraints(self):
         '''
         Function to generate all the constraints
+        ---
         '''
+        
         for x in range(9):
             self.constraints.append([9*x+y for y in range(0,9)])
         for y in range(9):
@@ -84,6 +100,13 @@ class Sudoku_Problem:
         return True
     
     def print_sudoku(self, assignment):
+        '''
+        Function to print the sudoku grid
+        ---
+        Args:
+        @assignment: The current values of the squares
+        '''
+        
         for i in range(81):
             if i%9 == 0:
                 print("\n")
@@ -101,6 +124,13 @@ class Sudoku_Problem:
                 
                 
     def is_valid(self,assignment,table):
+        '''
+        Function to check if the sudoku assignment is valid
+        ---
+        Args:
+        @assignment: The current assignment
+        @table: table containing the lengths of the domains of every variable
+        '''
         for constraint in self.constraints:
             used_digits = list() 
             for var in constraint:
@@ -151,7 +181,7 @@ def main():
     for filename in os.listdir(directory):
         print(" ------------------------------------ "+filename+" -------------------------------------")
         grid=Grid(os.path.join(directory,filename))
-        # solver.ac_three_begin(grid.grid, sudoku, grid.table)
+        solver.ac_three_begin(grid.grid, sudoku, grid.table)
         # solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
         assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table)
         print("Guesses = ",ng)
