@@ -99,8 +99,9 @@ class Solver:
         @csp: The constraint satisfaction problem
         @var: The variable to which value was assigned
         '''
-        return True
+        #return True
         res=self.ac_three(assignment,csp,var,table) # do ac3
+        #self.onlyPlaceForValue(csp, assignment, table)
         return res
 
     def ac_three(self, assignment, csp, var,table):
@@ -152,4 +153,20 @@ class Solver:
                     table[v_pair[0]]=table[v_pair[0]]-1
                     revised=True
         return revised
-    
+
+    def onlyPlaceForValue(self, csp, assignment, table):
+        for c in csp.constraints:
+            for value in range(9):
+                val_placed_in = list()
+                for var in c:
+                    if assignment[9*var + value] == 0:
+                        val_placed_in.append(var)
+
+                if len(val_placed_in) == 1:
+                    table[val_placed_in[0]] = 1
+                    for i in range(9):
+                        if i != value:
+                            assignment[9*val_placed_in[0] + i] = 1 
+                    self.ac_three(assignment, csp, val_placed_in[0],table)
+                            
+                
