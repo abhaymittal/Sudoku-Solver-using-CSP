@@ -99,6 +99,7 @@ class Solver:
         @csp: The constraint satisfaction problem
         @var: The variable to which value was assigned
         '''
+        return True
         res=self.ac_three(assignment,csp,var,table) # do ac3
         return res
 
@@ -118,7 +119,27 @@ class Solver:
                         ### Only add here if xk has domain of size 1
                         q.add((xk,v_pair[0]))
         return True
-        
+    
+    def ac_three_begin(self, assignment, csp, var, table):
+        q = set()
+
+        for c in csp.constraints:
+            for var1 in c:
+                for var2 in c:
+                    if var1 != var2 :
+                        q.add((var1, var2))
+
+        while len(q)>0:
+            v_pair = q.pop()
+            if self.revise(csp, v_pair, assignment,table):
+                if table[v_pair[0]] == 0:
+                    return False
+                for xk in csp.neighbours[v_pair[0]]:
+                    if xk != v_pair[1]:
+                        ### Only add here if xk has domain of size 1
+                        q.add((xk,v_pair[0]))
+        return True
+
     def revise(self,csp, v_pair, assignment,table):
         revised = False
         d_j = assignment[v_pair[1]]
@@ -131,5 +152,4 @@ class Solver:
                     table[v_pair[0]]=table[v_pair[0]]-1
                     revised=True
         return revised
-                        
-
+    
