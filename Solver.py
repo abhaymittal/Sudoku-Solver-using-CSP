@@ -18,8 +18,8 @@ class Solver:
             return assignment,0
 
         [var, n_guesses] = self.select_unassigned_variable(assignment,csp,use_mrv,table,is_assigned)
-        # if n_guesses > 0:
-        #     csp.print_sudoku_debug(assignment)
+#        if n_guesses > 0:
+#            csp.print_sudoku_debug(assignment)
 
         if var is None:
             return False,0
@@ -113,15 +113,19 @@ class Solver:
         @table: Array containing the domain size of each variable
         '''
         # return True
+    
+        res4, changed4 = self.hiddenSubset(csp, assignment, table)
         changed=True
         while(changed):
-            res,changed=self.ac_three(assignment,csp,var,table) # do ac3
+            res,changed=self.ac_three_begin(assignment,csp,table) # do ac3
             res2,changed2=self.onlyPlaceForValue(csp, assignment, table)
             res3,changed3 = self.pairInConstraint(csp, assignment, table)
-            res = res and res2  and res3
-            changed=changed or changed2  or changed3
+            res = res and res2  and res3 #and res4
+            changed=changed or changed2  or changed3 #or changed4
             if not res:
                 return False
+
+        res = res and res4
         return res
 
     def ac_three(self, assignment, csp, var,table):
@@ -160,6 +164,7 @@ class Solver:
         @csp: The constraint satisfaction problem
         @table: Array containing the domain size of each variable
         '''
+        domain_changed = False
         q = set()
 
         for c in csp.constraints:
@@ -171,13 +176,14 @@ class Solver:
         while len(q)>0:
             v_pair = q.pop()
             if self.revise(csp, v_pair, assignment,table):
+                domain_changed = True
                 if table[v_pair[0]] == 0:
-                    return False
+                    return False, domain_changed
                 for xk in csp.neighbours[v_pair[0]]:
                     if xk != v_pair[1]:
                         ### Only add here if xk has domain of size 1
                         q.add((xk,v_pair[0]))
-        return True
+        return True, domain_changed
     
 
     def revise(self,csp, v_pair, assignment,table):
@@ -212,7 +218,46 @@ class Solver:
                     if res == False:
                         return False,changed_flag or chn
         return True,changed_flag
-                            
+
+    def hiddenSubset(self, csp, assignment, table):
+        ## In every constraint
+        ## For every pair of values, if they are allowed in only two cells
+        ## Reduce the domain of the two cells to the two values
+        ## And Call other domain reduction strategies, this should be taken care of in the waterfall
+        domain_reduced = False
+
+        def getVariables(c, val):
+            var_list = []
+            for var in c:
+                if assignment[var*9 + val] == 0:
+                    var_list.append(var)
+            return var_list
+
+        def remove(vars, val1, val2):
+            for val in range(9):
+                if val != val1 and val != val2:
+                    for var in vars:
+                        if assignment[9*var + val] == 0:
+                            assignment[9*var + val] = 1
+                            table[var] = table[var] - 1
+                            domain_reduced = True
+
+        for c in csp.constraints:
+            for val1 in range(9):
+                val1_variables = getVariables(c, val1)
+                for val2 in range(val1 + 1, 9):
+                    val2_variables = getVariables(c, val2)
+                    #intersection = list(set(val1_variables) & set(val2_variables))
+                    intersection = []
+                    if val1_variables == val2_variables and len(val1_variables) == 2:
+                        intersection = val1_variables
+                    if len(intersection) == 2:
+                        #remaining_vars = [x for x in c if x not in intersection]
+                        #print(intersection, val1, val2)
+                        remove(intersection, val1, val2)
+
+        return True,domain_reduced
+                    
     def pairInConstraint(self, csp, assignment, table):
         ## For each constraint:
         ## Find all variables which have domain size of two : put them in a list
