@@ -6,7 +6,7 @@ class Solver:
     def __init__(self):
         return
     
-    def backtracking_search(self,assignment,csp,use_mrv, table):
+    def backtracking_search(self,assignment,csp,use_mrv, table,is_assigned):
         '''
         Implementation for backtracking search
         ---
@@ -17,7 +17,10 @@ class Solver:
         if csp.is_valid(assignment,table):
             return assignment,0
 
-        [var, n_guesses] = self.select_unassigned_variable(assignment,csp,use_mrv,table)
+        [var, n_guesses] = self.select_unassigned_variable(assignment,csp,use_mrv,table,is_assigned)
+        if var is None:
+            return False,0
+        is_assigned[var]=True
 
         var_state = self.order_domain_values(var, assignment, csp)
 
@@ -27,6 +30,7 @@ class Solver:
         for value in var_state:
             assign_copy = copy.deepcopy(assignment)
             table_copy=copy.deepcopy(table)
+            # ia_copy=copy.deepcopy(is_assigned)
             start = 9 * var
             table_copy[var]=1
             for j in range(9):
@@ -37,16 +41,19 @@ class Solver:
             
             if csp.is_consistent(var,assign_copy,table_copy):
                 if self.inference(assign_copy,csp,var,table_copy):
-                    result,ng=self.backtracking_search(assign_copy,csp,use_mrv,table_copy)
+                    result,ng=self.backtracking_search(assign_copy,csp,use_mrv,table_copy,is_assigned)
                     n_guesses=n_guesses+ng
                     if result is not False:
                         return result,n_guesses
+            # print("Chagne value for ",var)
 
+        is_assigned[var]=False
         table[var] = domain_length
+        # print "Backtrack from ",var
         return False,n_guesses
 
             
-    def select_unassigned_variable(self,assignment,csp,use_mrv,table):
+    def select_unassigned_variable(self,assignment,csp,use_mrv,table,is_assigned):
         '''
         Function to implement Variable Ordering
         ---
@@ -60,7 +67,8 @@ class Solver:
         '''
         if not use_mrv:
             for i,j in enumerate(table):
-                if j >= 2:
+                if not is_assigned[i]:
+                    print("Return variable with domain size ",i,j)
                     return [i, j-1]
             return None
         else:
@@ -68,9 +76,10 @@ class Solver:
             mrv_var=None
             min_len=csp.max_d_size+1 # min_len can not be more than  max domain size
             for i,j in enumerate(table):
-                if j>1 and j < min_len:
+                if (not is_assigned[i]) and j < min_len:
                     mrv_var=i
                     min_len=j
+            # print("Return variable with domain size ",mrv_var,min_len)
             return mrv_var,min_len-1
 
     def order_domain_values(self,var,assignment,csp):
@@ -101,7 +110,7 @@ class Solver:
         @table: Array containing the domain size of each variable
         '''
         return True
-        res=self.ac_three(assignment,csp,var,table) # do ac3
+        res=self.ac_three_begin(assignment,csp,table) # do ac3
         #self.onlyPlaceForValue(csp, assignment, table)
         return res
 

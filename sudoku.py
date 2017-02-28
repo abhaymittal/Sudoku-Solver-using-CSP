@@ -169,23 +169,24 @@ def main():
     sudoku=Sudoku_Problem()
     solver=Solver()
     directory='in'
+    is_assigned=[False]*729
+    grid=Grid('in/48.sudoku')
+    solver.ac_three_begin(grid.grid, sudoku, grid.table)
+    # solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
+    assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table,is_assigned)
+    print("Guesses = ",ng)
+    sudoku.print_sudoku(assignment)
+    print("\n")
 
-#     grid=Grid('in/100.sudoku')
-#     solver.ac_three_begin(grid.grid, sudoku, grid.table)
-#     solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
-#     assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table)
-#     print("Guesses = ",ng)
-#     sudoku.print_sudoku(assignment)
-#     print("\n")
-
-    for filename in os.listdir(directory):
-        print(" ------------------------------------ "+filename+" -------------------------------------")
-        grid=Grid(os.path.join(directory,filename))
-        solver.ac_three_begin(grid.grid, sudoku, grid.table)
-        # solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
-        assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table)
-        print("Guesses = ",ng)
-        sudoku.print_sudoku(assignment)
+    # for filename in os.listdir(directory):
+    #     print(" ------------------------------------ "+filename+" -------------------------------------")
+    #     grid=Grid(os.path.join(directory,filename))
+    #     solver.ac_three_begin(grid.grid, sudoku, grid.table)
+    #     is_assigned=[False]*729
+    #     # solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
+    #     assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table,is_assigned)
+    #     print("Guesses = ",ng)
+    #     sudoku.print_sudoku(assignment)
 
 if __name__== "__main__":
     main()
