@@ -112,13 +112,14 @@ class Solver:
         @var: The variable to which value was assigned
         @table: Array containing the domain size of each variable
         '''
-        return True
+        # return True
         changed=True
         while(changed):
             res,changed=self.ac_three(assignment,csp,var,table) # do ac3
             res2,changed2=self.onlyPlaceForValue(csp, assignment, table)
-            res = res and res2
-            changed=changed or changed2
+            res3,changed3 = self.pairInConstraint(csp, assignment, table)
+            res = res and res2  and res3
+            changed=changed or changed2  or changed3
             if not res:
                 return False
         return res
@@ -212,4 +213,35 @@ class Solver:
                         return False,changed_flag or chn
         return True,changed_flag
                             
-                
+    def pairInConstraint(self, csp, assignment, table):
+        ## For each constraint:
+        ## Find all variables which have domain size of two : put them in a list
+        ## If both the domain are same for a pair, remove the domain from rest of the variables and also from the list
+        changed_flag=False
+        
+        def remove_vars(c, domain, value_pair):
+            for var in c:
+                if var not in value_pair:
+                    if assignment[9* var + domain[0]] == 0:
+                        changed_flag=True
+                        assignment[9* var + domain[0]] = 1
+                        table[var] = table[var] - 1
+                    if assignment[9* var + domain[1]] == 0:
+                        changed_flag=True
+                        assignment[9* var + domain[1]] = 1
+                        table[var] = table[var] - 1
+
+        for c in csp.constraints:
+            domain_var = dict()
+            for var in c:
+                key = tuple(self.order_domain_values(var, assignment, table))
+                if len(key) == 2:
+                    if key not in domain_var :
+                        domain_var[key] = list()
+                    domain_var[key].append(var)
+
+            for key in domain_var:
+                if len(domain_var[key]) == 2:
+                    remove_vars(c, key, domain_var[key])
+                            
+        return True,changed_flag
