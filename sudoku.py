@@ -94,8 +94,8 @@ class Sudoku_Problem:
             return table[x] == 1 and (check(x,y) == True)
 
         def remove(x,val):
-            if assignment[x*9+val-1]==1:
-                assignment[x*9+val-1]=0
+            if assignment[x*9+val-1]==0:
+                assignment[x*9+val-1]=1
                 table[x]-=1
 
         # Get the value assigned to variable var
@@ -105,7 +105,6 @@ class Sudoku_Problem:
                 var_value=i+1
                 break
 
-        print(var," has value ",var_value)
         for x in self.neighbours[var]:
             remove(x,var_value)
             if table[x]==0:
@@ -134,7 +133,36 @@ class Sudoku_Problem:
                     print(str(j+1) + " ", end="")
                     break
         print("")
-                
+             
+
+   
+    def print_sudoku_debug(self, assignment):
+        '''
+        Function to print the sudoku grid
+        ---
+        Args:
+        @assignment: The current values of the squares
+        '''
+        
+        for i in range(81):
+            if i%9 == 0:
+                print("\n")
+            elif i%3 == 0 :
+                print("|", end="")
+            if i%27 == 0:
+                for k in range(20):
+                    print("-",end="")
+                print()
+            values = list()
+            for j in range(9):
+                if assignment[9*i +j] == 0:
+                    values.append(j+1)
+                    #print(str(j+1) + " ", end="")
+            print(''.join([str(x) for x in values]), end="")
+            print(" ", end="")
+        print("\n------------------------------------------------------------------")
+             
+
                 
     def is_valid(self,assignment,table):
         '''
@@ -183,23 +211,24 @@ def main():
     solver=Solver()
     directory='in'
     is_assigned=[False]*729
-    grid=Grid('in/1.sudoku')
-    # solver.ac_three_begin(grid.grid, sudoku, grid.table)
-    # solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
+
+    grid=Grid('in/26.sudoku')
+    solver.ac_three_begin(grid.grid, sudoku, grid.table)
+    solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
     assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table,is_assigned)
     print("Guesses = ",ng)
     sudoku.print_sudoku(assignment)
     print("\n")
 
-    # for filename in os.listdir(directory):
-    #     print(" ------------------------------------ "+filename+" -------------------------------------")
-    #     grid=Grid(os.path.join(directory,filename))
-    #     solver.ac_three_begin(grid.grid, sudoku, grid.table)
-    #     is_assigned=[False]*729
-    #     # solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
-    #     assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table,is_assigned)
-    #     print("Guesses = ",ng)
-    #     sudoku.print_sudoku(assignment)
+#     for filename in os.listdir(directory):
+#         print(" ------------------------------------ "+filename+" -------------------------------------")
+#         grid=Grid(os.path.join(directory,filename))
+#         solver.ac_three_begin(grid.grid, sudoku, grid.table)
+#         is_assigned=[False]*729
+#         #solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
+#         assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table,is_assigned)
+#         print("Guesses = ",ng)
+#         sudoku.print_sudoku(assignment)
 
 if __name__== "__main__":
     main()

@@ -18,6 +18,9 @@ class Solver:
             return assignment,0
 
         [var, n_guesses] = self.select_unassigned_variable(assignment,csp,use_mrv,table,is_assigned)
+        if n_guesses > 0:
+            csp.print_sudoku_debug(assignment)
+
         if var is None:
             return False,0
         is_assigned[var]=True
@@ -68,7 +71,7 @@ class Solver:
         if not use_mrv:
             for i,j in enumerate(table):
                 if not is_assigned[i]:
-                    print("Return variable with domain size ",i,j)
+                    #print("Return variable with domain size ",i,j)
                     return [i, j-1]
             return None
         else:
@@ -109,9 +112,9 @@ class Solver:
         @var: The variable to which value was assigned
         @table: Array containing the domain size of each variable
         '''
-        return True
+        #return True
         res=self.ac_three(assignment,csp,var,table) # do ac3
-        #self.onlyPlaceForValue(csp, assignment, table)
+        res = res and self.onlyPlaceForValue(csp, assignment, table)
         return res
 
     def ac_three(self, assignment, csp, var,table):
@@ -195,6 +198,8 @@ class Solver:
                     for i in range(9):
                         if i != value:
                             assignment[9*val_placed_in[0] + i] = 1 
-                    self.ac_three(assignment, csp, val_placed_in[0],table)
+                    if self.ac_three(assignment, csp, val_placed_in[0],table) == False:
+                        return False
+        return True
                             
                 
