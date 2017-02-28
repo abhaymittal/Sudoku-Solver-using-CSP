@@ -18,8 +18,8 @@ class Solver:
             return assignment,0
 
         [var, n_guesses] = self.select_unassigned_variable(assignment,csp,use_mrv,table,is_assigned)
-        if n_guesses > 0:
-            csp.print_sudoku_debug(assignment)
+        # if n_guesses > 0:
+        #     csp.print_sudoku_debug(assignment)
 
         if var is None:
             return False,0
@@ -112,9 +112,15 @@ class Solver:
         @var: The variable to which value was assigned
         @table: Array containing the domain size of each variable
         '''
-        #return True
-        res=self.ac_three(assignment,csp,var,table) # do ac3
-        res = res and self.onlyPlaceForValue(csp, assignment, table)
+        return True
+        changed=True
+        while(changed):
+            res,changed=self.ac_three(assignment,csp,var,table) # do ac3
+            res2,changed2=self.onlyPlaceForValue(csp, assignment, table)
+            res = res and res2
+            changed=changed or changed2
+            if not res:
+                return False
         return res
 
     def ac_three(self, assignment, csp, var,table):
@@ -131,17 +137,18 @@ class Solver:
         
         for i in csp.neighbours[var]:
             q.add((i, var))
-        
+        changed_flag=False
         while len(q)>0:
             v_pair = q.pop()
             if self.revise(csp, v_pair, assignment,table):
+                changed_flag=True
                 if table[v_pair[0]] == 0:
-                    return False
+                    return False,changed_flag
                 for xk in csp.neighbours[v_pair[0]]:
                     if xk != v_pair[1]:
                         ### Only add here if xk has domain of size 1
                         q.add((xk,v_pair[0]))
-        return True
+        return True,changed_flag
     
     def ac_three_begin(self, assignment, csp, table):
         '''
@@ -186,6 +193,7 @@ class Solver:
         return revised
 
     def onlyPlaceForValue(self, csp, assignment, table):
+        changed_flag=False
         for c in csp.constraints:
             for value in range(9):
                 val_placed_in = list()
@@ -193,13 +201,15 @@ class Solver:
                     if assignment[9*var + value] == 0:
                         val_placed_in.append(var)
 
-                if len(val_placed_in) == 1:
+                if len(val_placed_in) == 1 and table[val_placed_in[0]]>1:
                     table[val_placed_in[0]] = 1
+                    changed_flag=True
                     for i in range(9):
                         if i != value:
-                            assignment[9*val_placed_in[0] + i] = 1 
-                    if self.ac_three(assignment, csp, val_placed_in[0],table) == False:
-                        return False
-        return True
+                            assignment[9*val_placed_in[0] + i] = 1
+                    res,chn=self.ac_three(assignment, csp, val_placed_in[0],table)
+                    if res == False:
+                        return False,changed_flag or chn
+        return True,changed_flag
                             
                 
