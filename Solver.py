@@ -110,7 +110,7 @@ class Solver:
         @table: Array containing the domain size of each variable
         '''
         return True
-        res=self.ac_three_begin(assignment,csp,table) # do ac3
+        res=self.ac_three(assignment,csp,var,table) # do ac3
         #self.onlyPlaceForValue(csp, assignment, table)
         return res
 

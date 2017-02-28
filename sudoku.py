@@ -93,9 +93,22 @@ class Sudoku_Problem:
         def compare(x, y):
             return table[x] == 1 and (check(x,y) == True)
 
+        def remove(x,val):
+            if assignment[x*9+val-1]==1:
+                assignment[x*9+val-1]=0
+                table[x]-=1
 
+        # Get the value assigned to variable var
+        var_value=0
+        for i in range(9):
+            if assignment[var*9+i]==0:
+                var_value=i+1
+                break
+
+        print(var," has value ",var_value)
         for x in self.neighbours[var]:
-            if compare(x,var) == True:
+            remove(x,var_value)
+            if table[x]==0:
                 return False
         return True
     
@@ -170,8 +183,8 @@ def main():
     solver=Solver()
     directory='in'
     is_assigned=[False]*729
-    grid=Grid('in/48.sudoku')
-    solver.ac_three_begin(grid.grid, sudoku, grid.table)
+    grid=Grid('in/1.sudoku')
+    # solver.ac_three_begin(grid.grid, sudoku, grid.table)
     # solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
     assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table,is_assigned)
     print("Guesses = ",ng)
