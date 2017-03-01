@@ -212,6 +212,14 @@ def main():
     directory='in'
     is_assigned=[False]*729
 
+    strategies=dict()
+    strategies['use_mrv']=True
+    strategies['use_ac3']=True
+    strategies['use_unique_cand']=True
+    strategies['use_naked_pair']=True
+    strategies['use_hidden_pair']=False
+    strategies['use_waterfall_preprocess']=True
+
     # grid=Grid('in/26.sudoku')
     # solver.ac_three_begin(grid.grid, sudoku, grid.table)
     # solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
@@ -223,10 +231,10 @@ def main():
     for filename in os.listdir(directory):
         print(" ------------------------------------ "+filename+" -------------------------------------")
         grid=Grid(os.path.join(directory,filename))
-        # solver.ac_three_begin(grid.grid, sudoku, grid.table)
+        if strategies['use_waterfall_preprocess']:
+            solver.inference(grid.grid, sudoku, grid.table,strategies)
         is_assigned=[False]*729
-        # solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
-        assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table,is_assigned)
+        assignment,ng=solver.backtracking_search(grid.grid,sudoku,strategies,grid.table,is_assigned)
         print("Guesses = ",ng)
         sudoku.print_sudoku(assignment)
 

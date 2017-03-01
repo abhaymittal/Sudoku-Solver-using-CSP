@@ -6,7 +6,7 @@ class Solver:
     def __init__(self):
         return
     
-    def backtracking_search(self,assignment,csp,use_mrv, table,is_assigned):
+    def backtracking_search(self,assignment,csp,strategies, table,is_assigned):
         '''
         Implementation for backtracking search
         ---
@@ -17,7 +17,7 @@ class Solver:
         if csp.is_valid(assignment,table):
             return assignment,0
 
-        [var, n_guesses] = self.select_unassigned_variable(assignment,csp,use_mrv,table,is_assigned)
+        [var, n_guesses] = self.select_unassigned_variable(assignment,csp,strategies,table,is_assigned)
 #        if n_guesses > 0:
 #            csp.print_sudoku_debug(assignment)
 
@@ -43,8 +43,8 @@ class Solver:
                     assign_copy[start + j] = 1
             
             if csp.is_consistent(var,assign_copy,table_copy):
-                if self.inference(assign_copy,csp,var,table_copy):
-                    result,ng=self.backtracking_search(assign_copy,csp,use_mrv,table_copy,is_assigned)
+                if self.inference(assign_copy,csp,table_copy,strategies):
+                    result,ng=self.backtracking_search(assign_copy,csp,strategies,table_copy,is_assigned)
                     n_guesses=n_guesses+ng
                     if result is not False:
                         return result,n_guesses
@@ -56,7 +56,7 @@ class Solver:
         return False,n_guesses
 
             
-    def select_unassigned_variable(self,assignment,csp,use_mrv,table,is_assigned):
+    def select_unassigned_variable(self,assignment,csp,strategies,table,is_assigned):
         '''
         Function to implement Variable Ordering
         ---
@@ -68,7 +68,7 @@ class Solver:
         Desired variable
         Number of guesses
         '''
-        if not use_mrv:
+        if not strategies['use_mrv']:
             for i,j in enumerate(table):
                 if not is_assigned[i]:
                     #print("Return variable with domain size ",i,j)
@@ -102,7 +102,7 @@ class Solver:
         return domain_vals            
         #return assignment[var]
 
-    def inference(self,assignment,csp,var,table):
+    def inference(self,assignment,csp,table,strategies):
         '''
         Function to do the inferences over current assignment
         ---
@@ -112,19 +112,36 @@ class Solver:
         @var: The variable to which value was assigned
         @table: Array containing the domain size of each variable
         '''
-        # return True
-    
-        res4, changed4 = self.hiddenSubset(csp, assignment, table)
         changed=True
         while(changed):
-            res,changed=self.ac_three_begin(assignment,csp,table) # do ac3
-            res2,changed2=self.onlyPlaceForValue(csp, assignment, table)
-            res3,changed3 = self.pairInConstraint(csp, assignment, table)
+            if strategies['use_ac3']:
+                res,changed=self.ac_three_begin(assignment,csp,table) # do ac3
+            else:
+                res=True
+                changed=False
+
+            if strategies['use_unique_cand']:
+                res2,changed2=self.onlyPlaceForValue(csp, assignment, table)
+            else:
+                res2=True
+                changed=False
+
+            if strategies['use_naked_pair']:
+                res3,changed3 = self.pairInConstraint(csp, assignment, table)
+            else:
+                res3=True
+                changed3=False
+                
             res = res and res2  and res3 #and res4
             changed=changed or changed2  or changed3 #or changed4
             if not res:
                 return False
-
+        if strategies['use_hidden_pair']:
+            res4, changed4 = self.hiddenSubset(csp, assignment, table)
+        else:
+            res4=True
+            changed4=False
+            
         res = res and res4
         return res
 
