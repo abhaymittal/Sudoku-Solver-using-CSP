@@ -121,13 +121,13 @@ class Solver:
                 changed=False
 
             if strategies['use_unique_cand']:
-                res2,changed2=self.onlyPlaceForValue(csp, assignment, table)
+                res2,changed2=self.unique_candidate(csp, assignment, table)
             else:
                 res2=True
                 changed=False
 
             if strategies['use_naked_pair']:
-                res3,changed3 = self.pairInConstraint(csp, assignment, table)
+                res3,changed3 = self.naked_pair(csp, assignment, table)
             else:
                 res3=True
                 changed3=False
@@ -137,7 +137,7 @@ class Solver:
             if not res:
                 return False
         if strategies['use_hidden_pair']:
-            res4, changed4 = self.hiddenSubset(csp, assignment, table)
+            res4, changed4 = self.hidden_pair(csp, assignment, table)
         else:
             res4=True
             changed4=False
@@ -216,7 +216,7 @@ class Solver:
                     revised=True
         return revised
 
-    def onlyPlaceForValue(self, csp, assignment, table):
+    def unique_candidate(self, csp, assignment, table):
         changed_flag=False
         for c in csp.constraints:
             for value in range(9):
@@ -236,7 +236,7 @@ class Solver:
                         return False,changed_flag or chn
         return True,changed_flag
 
-    def hiddenSubset(self, csp, assignment, table):
+    def hidden_pair(self, csp, assignment, table):
         ## In every constraint
         ## For every pair of values, if they are allowed in only two cells
         ## Reduce the domain of the two cells to the two values
@@ -275,7 +275,7 @@ class Solver:
 
         return True,domain_reduced
                     
-    def pairInConstraint(self, csp, assignment, table):
+    def naked_pair(self, csp, assignment, table):
         ## For each constraint:
         ## Find all variables which have domain size of two : put them in a list
         ## If both the domain are same for a pair, remove the domain from rest of the variables and also from the list
