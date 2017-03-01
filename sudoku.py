@@ -216,14 +216,15 @@ def main():
     strategies['use_mrv']=True
     strategies['use_ac3']=True
     strategies['use_unique_cand']=True
-    strategies['use_naked_pair']=True
-    strategies['use_hidden_pair']=False
+    strategies['use_naked_pair']=False
+    strategies['use_hidden_pair']=True
     strategies['use_waterfall_preprocess']=True
+    strategies['use_xwing']=True
 
-    # grid=Grid('in/26.sudoku')
-    # solver.ac_three_begin(grid.grid, sudoku, grid.table)
-    # solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
-    # assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table,is_assigned)
+    # grid=Grid('in/48.sudoku')
+    # if strategies['use_waterfall_preprocess']:
+    #     solver.inference(grid.grid, sudoku, grid.table,strategies)
+    # assignment,ng=solver.backtracking_search(grid.grid,sudoku,strategies,grid.table,is_assigned)
     # print("Guesses = ",ng)
     # sudoku.print_sudoku(assignment)
     # print("\n")

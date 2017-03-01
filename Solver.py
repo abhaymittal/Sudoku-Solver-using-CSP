@@ -124,7 +124,7 @@ class Solver:
                 res2,changed2=self.unique_candidate(csp, assignment, table)
             else:
                 res2=True
-                changed=False
+                changed2=False
 
             if strategies['use_naked_pair']:
                 res3,changed3 = self.naked_pair(csp, assignment, table)
@@ -132,17 +132,24 @@ class Solver:
                 res3=True
                 changed3=False
                 
-            res = res and res2  and res3 #and res4
-            changed=changed or changed2  or changed3 #or changed4
+            if strategies['use_hidden_pair']:
+                res4, changed4 = self.hidden_pair(csp, assignment, table)
+            else:
+                res4=True
+                changed4=False
+
+            if strategies['use_xwing']:
+                res5,changed5=self.x_wing(csp,assignment,table)
+            else:
+                res5=True
+                changed5=False
+            res = res and res2  and res3 and res4# and res5
+            changed=changed or changed2  or changed3 or changed4 #or changed5
             if not res:
-                return False
-        if strategies['use_hidden_pair']:
-            res4, changed4 = self.hidden_pair(csp, assignment, table)
-        else:
-            res4=True
-            changed4=False
-            
-        res = res and res4
+                return False                
+        # print "Changed = ",changed
+        # res5,changed5=self.x_wing(csp,assignment,table)
+        # res=res and res5
         return res
 
     def ac_three(self, assignment, csp, var,table):
@@ -310,102 +317,117 @@ class Solver:
 
 
 
-    # def x_wing(self,csp,assignment,table):
-    #     row_constraints=csp.constraints[0:9]
-    #     col_constraints=csp.constraints[9:18]
-    #     changed_flag=True
-    #     #### Search for rectangles in rows
-    #     for i in range(9):
-    #         for j in range(i+1,9):
-    #             val_dict=dict()
-    #             rc1=row_constraints[i]
-    #             rc2=row_constraints[j]
-    #             for digit in range(9):
-    #                 val_dict[digit]=list()
-    #                 for col in range(9):
-    #                     if assignment[rc1[col]*9+digit]==0 and assignment[rc2[col]*9+digit]==0:
-    #                         val_dict[digit].append(col)
+    def x_wing(self,csp,assignment,table):
+        row_constraints=csp.constraints[0:9]
+        col_constraints=csp.constraints[9:18]
+        changed_flag=False
+        #### Search for rectangles in rows
+        for i in range(9):
+            for j in range(i+1,9):
+                val_dict=dict()
+                rc1=row_constraints[i]
+                rc2=row_constraints[j]
+                for digit in range(9):
+                    val_dict[digit]=list()
+                    occ_row1=0
+                    occ_row2=0
+                    for col in range(9):
+                        if assignment[rc1[col]*9+digit]==0:
+                            occ_row1+=1
+                        if assignment[rc2[col]*9+digit]==0:
+                            occ_row2+=1
+                    if occ_row1==2 and occ_row2==2:
+                        for col in range(9):
+                            if assignment[rc1[col]*9+digit]==0 and assignment[rc2[col]*9+digit]==0:
+                                val_dict[digit].append(col)
 
-    #             for digit in val_dict:
-    #                 if len(val_dict[digit])==2:
-    #                     changed_flag=True
-    #                     col1=val_dict[digit][0]
-    #                     col2=val_dict[digit][1]
-    #                     shared_col_var_11=rc1[col1]
-    #                     shared_col_var_12=rc1[col2]
-    #                     shared_col_var_21=rc2[col1]
-    #                     shared_col_var_22=rc2[col2]
-    #                     print("X wing found between row ",rc1,"and ",rc2," and cols ",col1,col2)
-    #                     csp.print_sudoku_debug(assignment)
-    #                     col1=col_constraints[col1]
-    #                     col2=col_constraints[col2]
-    #                     for var in col1:
-    #                         if var!=shared_col_var_11 and var!=shared_col_var_21:
-    #                             if assignment[var*9+digit]==0:
-    #                                 if table[var]>1:
-    #                                     table[var]-=1
-    #                                     assignment[var*9+digit]=1
-    #                                 else:
-    #                                     table[var]=0
-    #                                     print ("return false")
-    #                                     return False,changed_flag
-    #                     for var in col2:
-    #                         if var!=shared_col_var_12 and var!=shared_col_var_22:
-    #                             if assignment[var*9+digit]==0:
-    #                                 if table[var]>1:
-    #                                     table[var]-=1
-    #                                     assignment[var*9+digit]=1
-    #                                 else:
-    #                                     table[var]=0
-    #                                     print ("return false")
-    #                                     return False,changed_flag
+                for digit in val_dict:
+                    if len(val_dict[digit])==2:
+                        changed_flag=True
+                        col1=val_dict[digit][0]
+                        col2=val_dict[digit][1]
+                        shared_col_var_11=rc1[col1]
+                        shared_col_var_12=rc1[col2]
+                        shared_col_var_21=rc2[col1]
+                        shared_col_var_22=rc2[col2]
+                        # print("X wing found between row ",rc1,"and ",rc2," and cols ",col1,col2, "for digit",digit)
+                        # csp.print_sudoku_debug(assignment)
+                        col1=col_constraints[col1]
+                        col2=col_constraints[col2]
+                        for var in col1:
+                            if var!=shared_col_var_11 and var!=shared_col_var_21:
+                                if assignment[var*9+digit]==0:
+                                    if table[var]>1:
+                                        table[var]-=1
+                                        assignment[var*9+digit]=1
+                                    else:
+                                        table[var]=0
+                                        return False,changed_flag
+                        for var in col2:
+                            if var!=shared_col_var_12 and var!=shared_col_var_22:
+                                if assignment[var*9+digit]==0:
+                                    if table[var]>1:
+                                        table[var]-=1
+                                        assignment[var*9+digit]=1
+                                    else:
+                                        table[var]=0
+                                        return False,changed_flag
 
 
 
 
-    #     #### Search for rectangles in columns
-    #     for i in range(9):
-    #         for j in range(i+1,9):
-    #             val_dict=dict()
-    #             cc1=col_constraints[i]
-    #             cc2=col_constraints[j]
-    #             for digit in range(9):
-    #                 val_dict[digit]=list()
-    #                 for row in range(9):
-    #                     if assignment[cc1[row]*9+digit]==0 and assignment[cc2[row]*9+digit]==0:
-    #                         val_dict[digit].append(row)
+        #### Search for rectangles in columns
+        for i in range(9):
+            for j in range(i+1,9):
+                val_dict=dict()
+                cc1=col_constraints[i]
+                cc2=col_constraints[j]
+                for digit in range(9):
+                    val_dict[digit]=list()
+                    occ_col1=0
+                    occ_col2=0
+                    for row in range(9):
+                        if assignment[cc1[row]*9+digit]==0:
+                            occ_col1+=1
+                        if assignment[cc2[row]*9+digit]==0:
+                            occ_col2+=1
+                    if occ_col1==2 and occ_col2==2:
+                        for row in range(9):
+                            if assignment[cc1[row]*9+digit]==0 and assignment[cc2[row]*9+digit]==0:
+                                val_dict[digit].append(row)
                                 
 
-    #             for digit in val_dict:
-    #                 if len(val_dict[digit]==2):
-    #                     changed_flag=True
-    #                     row1=val_dict[digit][0]
-    #                     row2=val_dict[digit][1]
-    #                     shared_row_var_11=cc1[row1]
-    #                     shared_row_var_12=cc1[row2]
-    #                     shared_row_var_21=cc2[row1]
-    #                     shared_row_var_22=cc2[row2]
-    #                     print("X wing found between col ",cc1,"and ",cc2," and rows ",row1,row2)
-    #                     row1=col_constraints[row1]
-    #                     row2=col_constraints[row2]
-    #                     for var in row1:
-    #                         if var!=shared_row_var_11 and var!=shared_row_var_21:
-    #                             if assignment[var*9+digit]==0:
-    #                                 if table[var]>1:
-    #                                     table[var]-=1
-    #                                     assignment[var*9+digit]=1
-    #                                 else:
-    #                                     table[var]=0
-    #                                     return False,changed_flag
-    #                     for var in row2:
-    #                         if var!=shared_row_var_12 and var!=shared_row_var_22:
-    #                             if assignment[var*9+digit]==0:
-    #                                 if table[var]>1:
-    #                                     table[var]-=1
-    #                                     assignment[var*9+digit]=1
-    #                                 else:
-    #                                     table[var]=0
-    #                                     return False,changed_flag
+                for digit in val_dict:
+                    if len(val_dict[digit])==2:
+                        changed_flag=True
+                        row1=val_dict[digit][0]
+                        row2=val_dict[digit][1]
+                        shared_row_var_11=cc1[row1]
+                        shared_row_var_12=cc1[row2]
+                        shared_row_var_21=cc2[row1]
+                        shared_row_var_22=cc2[row2]
+                        # print("X wing found between col ",cc1,"and ",cc2," and rows ",row1,row2, "for digit",digit)
+                        # csp.print_sudoku_debug(assignment)
+                        row1=row_constraints[row1]
+                        row2=row_constraints[row2]
+                        for var in row1:
+                            if var!=shared_row_var_11 and var!=shared_row_var_21:
+                                if assignment[var*9+digit]==0:
+                                    if table[var]>1:
+                                        table[var]-=1
+                                        assignment[var*9+digit]=1
+                                    else:
+                                        table[var]=0
+                                        return False,changed_flag
+                        for var in row2:
+                            if var!=shared_row_var_12 and var!=shared_row_var_22:
+                                if assignment[var*9+digit]==0:
+                                    if table[var]>1:
+                                        table[var]-=1
+                                        assignment[var*9+digit]=1
+                                    else:
+                                        table[var]=0
+                                        return False,changed_flag
 
-    #     return True,changed_flag
+        return True,changed_flag
                             
