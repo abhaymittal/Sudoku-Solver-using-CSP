@@ -208,10 +208,11 @@ class Sudoku_Problem:
             score = 15
 
         w = 0.01
+        score+=10*w*ng
         score += w * inference_count['ac-three']
         score += w * inference_count['unique-candidate']
-        score += 4 * w * (inference_count['naked-pair'] + inference_count['hidden-pair'])
-        score += 6 * w * inference_count['x-wing']
+        score += 3 * w * (inference_count['naked-pair'] + inference_count['hidden-pair'])
+        score += 7 * w * inference_count['x-wing']
 
         output_file.write(output_string + " " + str(ng) + " " + str(blank_count) + " " + str(score) + "\n")
 
