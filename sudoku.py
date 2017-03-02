@@ -216,28 +216,123 @@ def main():
     strategies['use_mrv']=True
     strategies['use_ac3']=True
     strategies['use_unique_cand']=True
-    strategies['use_naked_pair']=False
-    strategies['use_hidden_pair']=True
+    strategies['use_naked_pair']=True
+    strategies['use_hidden_pair']=False
     strategies['use_waterfall_preprocess']=True
     strategies['use_xwing']=True
 
-    # grid=Grid('in/48.sudoku')
-    # if strategies['use_waterfall_preprocess']:
-    #     solver.inference(grid.grid, sudoku, grid.table,strategies)
-    # assignment,ng=solver.backtracking_search(grid.grid,sudoku,strategies,grid.table,is_assigned)
-    # print("Guesses = ",ng)
-    # sudoku.print_sudoku(assignment)
-    # print("\n")
+    grid=Grid('in/48.sudoku')
+    if strategies['use_waterfall_preprocess']:
+        solver.inference(grid.grid, sudoku, grid.table,strategies)
+    assignment,ng=solver.backtracking_search(grid.grid,sudoku,strategies,grid.table,is_assigned)
+    print("Guesses = ",ng)
+    sudoku.print_sudoku(assignment)
+    print("\n")
 
-    for filename in os.listdir(directory):
-        print(" ------------------------------------ "+filename+" -------------------------------------")
-        grid=Grid(os.path.join(directory,filename))
-        if strategies['use_waterfall_preprocess']:
-            solver.inference(grid.grid, sudoku, grid.table,strategies)
-        is_assigned=[False]*729
-        assignment,ng=solver.backtracking_search(grid.grid,sudoku,strategies,grid.table,is_assigned)
-        print("Guesses = ",ng)
-        sudoku.print_sudoku(assignment)
+    # for filename in os.listdir(directory):
+    #     print(" ------------------------------------ "+filename+" -------------------------------------")
+    #     grid=Grid(os.path.join(directory,filename))
+    #     if strategies['use_waterfall_preprocess']:
+    #         solver.inference(grid.grid, sudoku, grid.table,strategies)
+    #     is_assigned=[False]*729
+    #     assignment,ng=solver.backtracking_search(grid.grid,sudoku,strategies,grid.table,is_assigned)
+    #     print("Guesses = ",ng)
+    #     sudoku.print_sudoku(assignment)
+
+
+    # ############################################
+    # print_sudoku=False
+    # sudoku=Sudoku_Problem()
+    # solver=Solver()
+    # directory='in'
+    # is_assigned=[False]*729
+
+    # strategies=dict()
+    # strategies['use_mrv']=True
+    # strategies['use_ac3']=True
+    # strategies['use_unique_cand']=True
+    # strategies['use_naked_pair']=True
+    # strategies['use_hidden_pair']=False
+    # strategies['use_waterfall_preprocess']=True
+    # strategies['use_xwing']=True
+
+    # ############ PLAIN BACKTRACK ################
+    # print("PLAIN BACKTRACK")
+    # print("Puzzle # | #Guesses")
+    # strategies['use_mrv']=False
+    # strategies['use_ac3']=False
+    # strategies['use_unique_cand']=False
+    # strategies['use_naked_pair']=False
+    # strategies['use_hidden_pair']=False
+    # strategies['use_waterfall_preprocess']=False
+    # strategies['use_xwing']=False
+    # for filename in os.listdir(directory):
+    #     grid=Grid(os.path.join(directory,filename))
+    #     is_assigned=[False]*729
+    #     assignment,ng=solver.backtracking_search(grid.grid,sudoku,strategies,grid.table,is_assigned)
+    #     print(filename, " | ",ng)
+    #     if print_sudoku:
+    #         sudo.print_sudoku(assignment)
+
+    # ############ MRV ONLY #######################
+    # print("________________________________________________________________")
+    # print ("MRV Heuristic")
+    # print("Puzzle # | #Guesses")
+    # strategies['use_mrv']=True
+    # strategies['use_ac3']=False
+    # strategies['use_unique_cand']=False
+    # strategies['use_naked_pair']=False
+    # strategies['use_hidden_pair']=False
+    # strategies['use_waterfall_preprocess']=False
+    # strategies['use_xwing']=False
+    # for filename in os.listdir(directory):
+    #     grid=Grid(os.path.join(directory,filename))
+    #     is_assigned=[False]*729
+    #     assignment,ng=solver.backtracking_search(grid.grid,sudoku,strategies,grid.table,is_assigned)
+    #     print(filename, " | ",ng)
+    #     if print_sudoku:
+    #         sudo.print_sudoku(assignment)
+
+    # ############# AC-3 + MRV (No preprocessing) #####
+    # print("________________________________________________________________")
+    # print ("AC3 + MRV")
+    # print("Puzzle # | #Guesses")
+    # strategies['use_mrv']=True
+    # strategies['use_ac3']=True
+    # strategies['use_unique_cand']=False
+    # strategies['use_naked_pair']=False
+    # strategies['use_hidden_pair']=False
+    # strategies['use_waterfall_preprocess']=False
+    # strategies['use_xwing']=False
+    # for filename in os.listdir(directory):
+    #     grid=Grid(os.path.join(directory,filename))
+    #     is_assigned=[False]*729
+    #     assignment,ng=solver.backtracking_search(grid.grid,sudoku,strategies,grid.table,is_assigned)
+    #     print(filename, " | ",ng)
+    #     if print_sudoku:
+    #         sudo.print_sudoku(assignment)
+
+    # #
+
+
+    # ############ WATERFALL ##########################
+    # print("________________________________________________________________")
+    # print ("Waterfall - AC3 + MRV + Unique Candidate + Hidden Pair + X-Wing")
+    # print("Puzzle # | #Guesses")
+    # strategies['use_mrv']=True
+    # strategies['use_ac3']=True
+    # strategies['use_unique_cand']=True
+    # strategies['use_naked_pair']=False
+    # strategies['use_hidden_pair']=True
+    # strategies['use_waterfall_preprocess']=True
+    # strategies['use_xwing']=True
+    # for filename in os.listdir(directory):
+    #     grid=Grid(os.path.join(directory,filename))
+    #     is_assigned=[False]*729
+    #     assignment,ng=solver.backtracking_search(grid.grid,sudoku,strategies,grid.table,is_assigned)
+    #     print(filename, " | ",ng)
+    #     if print_sudoku:
+    #         sudo.print_sudoku(assignment)    
 
 if __name__== "__main__":
     main()

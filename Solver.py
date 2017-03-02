@@ -48,11 +48,9 @@ class Solver:
                     n_guesses=n_guesses+ng
                     if result is not False:
                         return result,n_guesses
-            # print("Chagne value for ",var)
 
         is_assigned[var]=False
         table[var] = domain_length
-        # print "Backtrack from ",var
         return False,n_guesses
 
             
@@ -71,7 +69,6 @@ class Solver:
         if not strategies['use_mrv']:
             for i,j in enumerate(table):
                 if not is_assigned[i]:
-                    #print("Return variable with domain size ",i,j)
                     return [i, j-1]
             return None
         else:
@@ -82,7 +79,6 @@ class Solver:
                 if (not is_assigned[i]) and j < min_len:
                     mrv_var=i
                     min_len=j
-            # print("Return variable with domain size ",mrv_var,min_len)
             return mrv_var,min_len-1
 
     def order_domain_values(self,var,assignment,csp):
@@ -143,8 +139,8 @@ class Solver:
             else:
                 res5=True
                 changed5=False
-            res = res and res2  and res3 and res4# and res5
-            changed=changed or changed2  or changed3 or changed4 #or changed5
+            res = res and res2  and res3 and res4 and res5
+            changed=changed or changed2  or changed3 or changed4 or changed5
             if not res:
                 return False                
         # print "Changed = ",changed
@@ -318,9 +314,19 @@ class Solver:
 
 
     def x_wing(self,csp,assignment,table):
+        '''
+        Function implementing the X Wing strategy
+        ---
+        Args:
+        @csp: The sudoku csp
+        @assignment: The current assignment to variables
+        @table: A list containing the domain size of all variables
+        '''
         row_constraints=csp.constraints[0:9]
         col_constraints=csp.constraints[9:18]
         changed_flag=False
+
+        
         #### Search for rectangles in rows
         for i in range(9):
             for j in range(i+1,9):
@@ -343,21 +349,20 @@ class Solver:
 
                 for digit in val_dict:
                     if len(val_dict[digit])==2:
-                        changed_flag=True
+
                         col1=val_dict[digit][0]
                         col2=val_dict[digit][1]
                         shared_col_var_11=rc1[col1]
                         shared_col_var_12=rc1[col2]
                         shared_col_var_21=rc2[col1]
                         shared_col_var_22=rc2[col2]
-                        # print("X wing found between row ",rc1,"and ",rc2," and cols ",col1,col2, "for digit",digit)
-                        # csp.print_sudoku_debug(assignment)
                         col1=col_constraints[col1]
                         col2=col_constraints[col2]
                         for var in col1:
                             if var!=shared_col_var_11 and var!=shared_col_var_21:
                                 if assignment[var*9+digit]==0:
                                     if table[var]>1:
+                                        changed_flag=True
                                         table[var]-=1
                                         assignment[var*9+digit]=1
                                     else:
@@ -367,6 +372,7 @@ class Solver:
                             if var!=shared_col_var_12 and var!=shared_col_var_22:
                                 if assignment[var*9+digit]==0:
                                     if table[var]>1:
+                                        changed_flag=True
                                         table[var]-=1
                                         assignment[var*9+digit]=1
                                     else:
@@ -399,21 +405,19 @@ class Solver:
 
                 for digit in val_dict:
                     if len(val_dict[digit])==2:
-                        changed_flag=True
                         row1=val_dict[digit][0]
                         row2=val_dict[digit][1]
                         shared_row_var_11=cc1[row1]
                         shared_row_var_12=cc1[row2]
                         shared_row_var_21=cc2[row1]
                         shared_row_var_22=cc2[row2]
-                        # print("X wing found between col ",cc1,"and ",cc2," and rows ",row1,row2, "for digit",digit)
-                        # csp.print_sudoku_debug(assignment)
                         row1=row_constraints[row1]
                         row2=row_constraints[row2]
                         for var in row1:
                             if var!=shared_row_var_11 and var!=shared_row_var_21:
                                 if assignment[var*9+digit]==0:
                                     if table[var]>1:
+                                        changed_flag=True
                                         table[var]-=1
                                         assignment[var*9+digit]=1
                                     else:
@@ -423,6 +427,7 @@ class Solver:
                             if var!=shared_row_var_12 and var!=shared_row_var_22:
                                 if assignment[var*9+digit]==0:
                                     if table[var]>1:
+                                        changed_flag=True
                                         table[var]-=1
                                         assignment[var*9+digit]=1
                                     else:
