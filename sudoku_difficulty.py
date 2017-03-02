@@ -1,5 +1,5 @@
 from __future__ import print_function
-from grid_tmp import *
+from grid import *
 from Solver_difficulty import *
 import os
 import copy
@@ -197,8 +197,25 @@ class Sudoku_Problem:
         output_string += str(inference_count['hidden-pair']) + " "
         output_string += str(inference_count['x-wing']) 
 
-        output_file.write(output_string + " " + str(ng) + " " + str(blank_count) + "\n")
+        score = 0
+        if blank_count < 50:
+            score = 0
+        elif blank_count < 55:
+            score = 5
+        elif blank_count < 60:
+            score = 10
+        else :
+            score = 15
 
+        w = 0.01
+        score += w * inference_count['ac-three']
+        score += w * inference_count['unique-candidate']
+        score += 4 * w * (inference_count['naked-pair'] + inference_count['hidden-pair'])
+        score += 6 * w * inference_count['x-wing']
+
+        output_file.write(output_string + " " + str(ng) + " " + str(blank_count) + " " + str(score) + "\n")
+
+        return score
 #########################################################################################
 ####################################### MAIN ############################################
 #########################################################################################
@@ -206,7 +223,7 @@ class Sudoku_Problem:
 def main():
     sudoku=Sudoku_Problem()
     solver=Solver()
-    directory='optional/sudoku'
+    directory='in'
     is_assigned=[False]*729
 
     strategies=dict()
@@ -237,7 +254,7 @@ def main():
         
         grid_copy = copy.deepcopy(grid)
         
-        blank_count = len([x for x in grid.table if grid.table[x] > 1])
+        blank_count = len([x for x in grid.table if x > 1])
 
         if strategies['use_waterfall_preprocess']:
             solver.inference(grid.grid, sudoku, grid.table,strategies)
@@ -249,8 +266,10 @@ def main():
 
         sudoku.print_sudoku(assignment)
 
-        sudoku.get_difficulty(solver.inference_use_count, output_file, filename, ng, blank_count)
+        score = sudoku.get_difficulty(solver.inference_use_count, output_file, filename, ng, blank_count)
                 
+        print("Score = ", score)
+
     output_file.close()
 
 if __name__== "__main__":
