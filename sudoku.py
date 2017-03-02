@@ -71,27 +71,26 @@ class Sudoku_Problem:
         
     def is_consistent(self,var,assignment,table):
         '''
-        Function to check if the current assignment to variable var is consistent
+        Function to check if the current assignment to variable var is consistent. It also does forward checking for the variable
         ---
         Args:
         @var: The variable whose consistency needs to be checked
         @assignment: The current assignment
         '''
-        ## This function is to be used only when we know that the variable has been fixed to one value
-        def check(x,y):
-            x_value = -1
-            for j in range(0,9):
-                if assignment[9*x + j] == 0:
-                    x_value = j + 1
-                    break
+        # def check(x,y):
+        #     x_value = -1
+        #     for j in range(0,9):
+        #         if assignment[9*x + j] == 0:
+        #             x_value = j + 1
+        #             break
 
-            for j in range(0,9):
-                if assignment[9*y + j] == 0:
-                    return x_value == j+1
-            return False
+        #     for j in range(0,9):
+        #         if assignment[9*y + j] == 0:
+        #             return x_value == j+1
+        #     return False
 
-        def compare(x, y):
-            return table[x] == 1 and (check(x,y) == True)
+        # def compare(x, y):
+        #     return table[x] == 1 and (check(x,y) == True)
 
         def remove(x,val):
             if assignment[x*9+val-1]==0:
@@ -105,6 +104,7 @@ class Sudoku_Problem:
                 var_value=i+1
                 break
 
+        # Remove the assigned value from the neighbors
         for x in self.neighbours[var]:
             remove(x,var_value)
             if table[x]==0:
