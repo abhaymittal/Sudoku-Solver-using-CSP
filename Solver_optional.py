@@ -1,3 +1,4 @@
+# This file contains modifications to return the domain reductions done by inference methods.
 from sets import *
 import copy
 

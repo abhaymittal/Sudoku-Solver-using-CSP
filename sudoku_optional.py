@@ -1,6 +1,8 @@
+## This file contains te implementation of get_difficulty function for optional part.
+
 from __future__ import print_function
 from grid import *
-from Solver_difficulty import *
+from Solver_optional import *
 import os
 import copy
 
@@ -189,13 +191,22 @@ class Sudoku_Problem:
                 used_digits.append(x_value)                
         return True
 
-    def get_difficulty(self, inference_count, output_file, puzzle,ng, blank_count):
-        output_string = puzzle + " "
-        output_string += str(inference_count['ac-three']) + " "
-        output_string += str(inference_count['unique-candidate']) + " "
-        output_string += str(inference_count['naked-pair']) + " "
-        output_string += str(inference_count['hidden-pair']) + " "
-        output_string += str(inference_count['x-wing']) 
+    def get_difficulty(self, inference_count, puzzle,ng, blank_count):
+        '''
+        Function to determine the difficulty level of a sudoku
+        ---
+        Args:
+        @inference_count: dictionary containing the number of domain reductions made by each inference method
+        @puzzle: the sudoku grid
+        @ng: The number of guesses made using complete waterfall
+        @blank_count: The number of blanks in the sudoku
+        '''
+        # output_string = puzzle + " "
+        # output_string += str(inference_count['ac-three']) + " "
+        # output_string += str(inference_count['unique-candidate']) + " "
+        # output_string += str(inference_count['naked-pair']) + " "
+        # output_string += str(inference_count['hidden-pair']) + " "
+        # output_string += str(inference_count['x-wing']) 
 
         score = 0
         if blank_count < 50:
@@ -208,13 +219,13 @@ class Sudoku_Problem:
             score = 15
 
         w = 0.01
-        score+=10*w*ng
+        score+=10*w*ng 
         score += w * inference_count['ac-three']
         score += w * inference_count['unique-candidate']
         score += 3 * w * (inference_count['naked-pair'] + inference_count['hidden-pair'])
         score += 7 * w * inference_count['x-wing']
 
-        output_file.write(output_string + " " + str(ng) + " " + str(blank_count) + " " + str(score) + "\n")
+        # output_file.write(output_string + " " + str(ng) + " " + str(blank_count) + " " + str(score) + "\n")
 
         return score
 #########################################################################################
@@ -236,15 +247,7 @@ def main():
     strategies['use_waterfall_preprocess']=True
     strategies['use_xwing'] = True
 
-    output_file = open('output', 'w')
-
-    # grid=Grid('in/26.sudoku')
-    # solver.ac_three_begin(grid.grid, sudoku, grid.table)
-    # solver.onlyPlaceForValue(sudoku, grid.grid, grid.table)
-    # assignment,ng=solver.backtracking_search(grid.grid,sudoku,True,grid.table,is_assigned)
-    # print("Guesses = ",ng)
-    # sudoku.print_sudoku(assignment)
-    # print("\n")
+    # output_file = open('output', 'w')
 
     for filename in os.listdir(directory):
         print(" ------------------------------------ "+filename+" -------------------------------------")
@@ -267,11 +270,12 @@ def main():
 
         sudoku.print_sudoku(assignment)
 
-        score = sudoku.get_difficulty(solver.inference_use_count, output_file, filename, ng, blank_count)
-                
+        score = sudoku.get_difficulty(solver.inference_use_count, filename, ng, blank_count)
+        print("\n")
         print("Score = ", score)
+        print("\n\n")
 
-    output_file.close()
+    # output_file.close()
 
 if __name__== "__main__":
     main()
