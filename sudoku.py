@@ -21,7 +21,6 @@ class Sudoku_Problem:
         '''
         for i in range(9):
             for j in range(9):
-                #self.neighbours[str(i) + str(j)] = self.get_neighbours(i,j)
                 self.neighbours[9*i+j] = self.get_neighbours(i,j) 
         
     def get_neighbours(self, g_x, g_y):
@@ -77,20 +76,6 @@ class Sudoku_Problem:
         @var: The variable whose consistency needs to be checked
         @assignment: The current assignment
         '''
-        # def check(x,y):
-        #     x_value = -1
-        #     for j in range(0,9):
-        #         if assignment[9*x + j] == 0:
-        #             x_value = j + 1
-        #             break
-
-        #     for j in range(0,9):
-        #         if assignment[9*y + j] == 0:
-        #             return x_value == j+1
-        #     return False
-
-        # def compare(x, y):
-        #     return table[x] == 1 and (check(x,y) == True)
 
         def remove(x,val):
             if assignment[x*9+val-1]==0:
@@ -138,7 +123,7 @@ class Sudoku_Problem:
    
     def print_sudoku_debug(self, assignment):
         '''
-        Function to print the sudoku grid
+        Function to print the sudoku grid in its intermediate state
         ---
         Args:
         @assignment: The current values of the squares
@@ -188,18 +173,6 @@ class Sudoku_Problem:
                     return False
                 used_digits.append(x_value)                
         return True
-
-#     def print_grid(self,grid):
-#         print "-----------------------------------------"
-#         for i in range(9):
-#             print "|",
-#             for j in range(9):
-#                 key=str(i)+str(j)
-#                 print str(grid[key][0])+"|",
-#             print ""
-#             print "-------------------------------------"
-#         return
-
     
 
 #########################################################################################
@@ -207,40 +180,6 @@ class Sudoku_Problem:
 #########################################################################################
 
 def main():
-    # sudoku=Sudoku_Problem()
-    # solver=Solver()
-    # directory='in'
-    # is_assigned=[False]*729
-
-    # strategies=dict()
-    # strategies['use_mrv']=True
-    # strategies['use_ac3']=True
-    # strategies['use_unique_cand']=True
-    # strategies['use_naked_pair']=True
-    # strategies['use_hidden_pair']=False
-    # strategies['use_waterfall_preprocess']=True
-    # strategies['use_xwing']=True
-
-    # grid=Grid('in/48.sudoku')
-    # if strategies['use_waterfall_preprocess']:
-    #     solver.inference(grid.grid, sudoku, grid.table,strategies)
-    # assignment,ng=solver.backtracking_search(grid.grid,sudoku,strategies,grid.table,is_assigned)
-    # print("Guesses = ",ng)
-    # sudoku.print_sudoku(assignment)
-    # print("\n")
-
-    # for filename in os.listdir(directory):
-    #     print(" ------------------------------------ "+filename+" -------------------------------------")
-    #     grid=Grid(os.path.join(directory,filename))
-    #     if strategies['use_waterfall_preprocess']:
-    #         solver.inference(grid.grid, sudoku, grid.table,strategies)
-    #     is_assigned=[False]*729
-    #     assignment,ng=solver.backtracking_search(grid.grid,sudoku,strategies,grid.table,is_assigned)
-    #     print("Guesses = ",ng)
-    #     sudoku.print_sudoku(assignment)
-
-
-    ############################################
     print_sudoku=False
     sudoku=Sudoku_Problem()
     solver=Solver()

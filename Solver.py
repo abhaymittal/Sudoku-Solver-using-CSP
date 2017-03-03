@@ -18,8 +18,6 @@ class Solver:
             return assignment,0
 
         [var, n_guesses] = self.select_unassigned_variable(assignment,csp,strategies,table,is_assigned)
-#        if n_guesses > 0:
-#            csp.print_sudoku_debug(assignment)
 
         if var is None:
             return False,0
@@ -33,7 +31,6 @@ class Solver:
         for value in var_state:
             assign_copy = copy.deepcopy(assignment)
             table_copy=copy.deepcopy(table)
-            # ia_copy=copy.deepcopy(is_assigned)
             start = 9 * var
             table_copy[var]=1
             for j in range(9):
@@ -96,7 +93,6 @@ class Solver:
             if assignment[start + j] == 0:
                 domain_vals.append(j)
         return domain_vals            
-        #return assignment[var]
 
     def inference(self,assignment,csp,table,strategies):
         '''
@@ -143,41 +139,38 @@ class Solver:
             changed=changed or changed2  or changed3 or changed4 or changed5
             if not res:
                 return False                
-        # print "Changed = ",changed
-        # res5,changed5=self.x_wing(csp,assignment,table)
-        # res=res and res5
         return res
 
-    def ac_three(self, assignment, csp, var,table):
-        '''
-        Function implementing AC3 (MAC version) algorithm
-        ---
-        Args:
-        @assignment: The current assignment
-        @csp: The constraint satisfaction problem
-        @var: The variable to which value was assigned
-        @table: Array containing the domain size of each variable
-        '''
-        q = set()
+    # def ac_three(self, assignment, csp, var,table):
+    #     '''
+    #     Function implementing AC3 (MAC version) algorithm
+    #     ---
+    #     Args:
+    #     @assignment: The current assignment
+    #     @csp: The constraint satisfaction problem
+    #     @var: The variable to which value was assigned
+    #     @table: Array containing the domain size of each variable
+    #     '''
+    #     q = set()
         
-        for i in csp.neighbours[var]:
-            q.add((i, var))
-        changed_flag=False
-        while len(q)>0:
-            v_pair = q.pop()
-            if self.revise(csp, v_pair, assignment,table):
-                changed_flag=True
-                if table[v_pair[0]] == 0:
-                    return False,changed_flag
-                for xk in csp.neighbours[v_pair[0]]:
-                    if xk != v_pair[1]:
-                        ### Only add here if xk has domain of size 1
-                        q.add((xk,v_pair[0]))
-        return True,changed_flag
+    #     for i in csp.neighbours[var]:
+    #         q.add((i, var))
+    #     changed_flag=False
+    #     while len(q)>0:
+    #         v_pair = q.pop()
+    #         if self.revise(csp, v_pair, assignment,table):
+    #             changed_flag=True
+    #             if table[v_pair[0]] == 0:
+    #                 return False,changed_flag
+    #             for xk in csp.neighbours[v_pair[0]]:
+    #                 if xk != v_pair[1]:
+    #                     ### Only add here if xk has domain of size 1
+    #                     q.add((xk,v_pair[0]))
+    #     return True,changed_flag
     
     def ac_three_begin(self, assignment, csp, table):
         '''
-        Function implementing AC3 (preprocessing) aglgorithm
+        Function implementing AC3 algorithm
         ---
         Args:
         @assignment: The current assignment
@@ -220,6 +213,14 @@ class Solver:
         return revised
 
     def unique_candidate(self, csp, assignment, table):
+        '''
+        Function implementing the Unique Candidate inference
+        ---
+        Args:
+        @csp: The sudoku problem
+        @assignment: The sudoku grid
+        @table: A table containing the lengths of domains of all variables
+        '''
         changed_flag=False
         for c in csp.constraints:
             for value in range(9):
@@ -240,6 +241,14 @@ class Solver:
         return True,changed_flag
 
     def hidden_pair(self, csp, assignment, table):
+        '''
+        Function implementing the Hidden Pair inference
+        ---
+        Args:
+        @csp: The sudoku problem
+        @assignment: The sudoku grid
+        @table: A table containing the lengths of domains of all variables
+        '''
         ## In every constraint
         ## For every pair of values, if they are allowed in only two cells
         ## Reduce the domain of the two cells to the two values
@@ -279,6 +288,14 @@ class Solver:
         return True,domain_reduced
                     
     def naked_pair(self, csp, assignment, table):
+        '''
+        Function implementing the Naked Pair inference
+        ---
+        Args:
+        @csp: The sudoku problem
+        @assignment: The sudoku grid
+        @table: A table containing the lengths of domains of all variables
+        '''
         ## For each constraint:
         ## Find all variables which have domain size of two : put them in a list
         ## If both the domain are same for a pair, remove the domain from rest of the variables and also from the list
