@@ -235,7 +235,7 @@ class Solver:
                     for i in range(9):
                         if i != value:
                             assignment[9*val_placed_in[0] + i] = 1
-                    res,chn=self.ac_three(assignment, csp, val_placed_in[0],table)
+                    res,chn=self.ac_three_begin(assignment, csp, table)
                     if res == False:
                         return False,changed_flag or chn
         return True,changed_flag
